@@ -1,0 +1,425 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.header-logo {
+    height: 60px;
+}
+
+.header-info {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.header-info h1 {
+    color: #2d3748;
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+.header-info p {
+    color: #718096;
+    font-size: 0.95em;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f7fafc;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+.user-role {
+    background: #667eea;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-btn {
+    padding: 12px 20px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    color: #4a5568;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.nav-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.main-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.page-title {
+    color: #2d3748;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #38a169;
+}
+
+.btn-danger {
+    background: #f56565;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #e53e3e;
+}
+
+.users-table-container {
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.users-table th {
+    background: #f7fafc;
+    color: #4a5568;
+    font-weight: 600;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.users-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.users-table tr:hover {
+    background: #f7fafc;
+}
+
+.role-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.role-admin {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.role-operator {
+    background: #feebc8;
+    color: #b7791f;
+}
+
+.role-viewer {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.role-guest {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.status-active {
+    color: #48bb78;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #e53e3e;
+    font-weight: 600;
+}
+
+.action-buttons-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.3s;
+}
+
+.edit-btn {
+    background: #4299e1;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #3182ce;
+}
+
+.delete-btn {
+    background: #f56565;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #e53e3e;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+    color: #2d3748;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    justify-content: flex-end;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2d3748;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    gap: 15px;
+    z-index: 1001;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.toast-success {
+    background: #48bb78;
+}
+
+.toast-error {
+    background: #f56565;
+}
+
+.toast-icon {
+    font-size: 1.2em;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #a0aec0;
+}
+
+.empty-state-icon {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #cbd5e0;
+}
+
+.activity-log {
+    background: #f7fafc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.activity-log h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+.activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.9em;
+}
+
+.activity-time {
+    color: #718096;
+    font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .nav-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .users-table th,
+    .users-table td {
+        padding: 10px 5px;
+        font-size: 0.9em;
+    }
+}

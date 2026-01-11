@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Người Dùng - Solar Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/users.css') }}">
+</head>
+<body>
+    <!-- Thêm element này để lưu user_id -->
+    <div id="userData" data-user-id="{{ session.get('user_id', 0) }}" style="display: none;"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='img/iuh.png') }}" alt="IUH Logo" class="header-logo">
+            <div class="header-info">
+                <h1>Quản Lý Người Dùng</h1>
+                <p>Khoa Công Nghệ Điện Tử - Hệ Thống Solar Tracker</p>
+            </div>
+            <div class="user-controls">
+                <div class="user-info">
+                    <span>👤 {{ current_user.full_name or current_user.username }}</span>
+                    <span class="user-role">{{ current_user.role|upper }}</span>
+                </div>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-buttons">
+            <a href="{{ url_for('dashboard') }}" class="nav-btn">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <button class="nav-btn active">
+                <i class="fas fa-users"></i> Quản Lý Người Dùng
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-title">
+                <h2><i class="fas fa-users"></i> Danh Sách Người Dùng</h2>
+                <button class="btn btn-success" onclick="openCreateUserModal()">
+                    <i class="fas fa-user-plus"></i> Thêm Người Dùng
+                </button>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="users-table-container">
+                <div id="usersLoading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Đang tải danh sách người dùng...
+                </div>
+                
+                <table class="users-table" id="usersTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên Đăng Nhập</th>
+                            <th>Họ Tên</th>
+                            <th>Role</th>
+                            <th>Email</th>
+                            <th>Ngày Tạo</th>
+                            <th>Đăng Nhập Cuối</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here via JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyUsers" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-users-slash"></i>
+                    </div>
+                    <h3>Không có người dùng nào</h3>
+                    <p>Bấm vào nút "Thêm Người Dùng" để tạo người dùng mới</p>
+                </div>
+            </div>
+            
+            <!-- Activity Log -->
+            <div class="activity-log" id="activityLog" style="display: none;">
+                <h3><i class="fas fa-history"></i> Hoạt Động Gần Đây</h3>
+                <div class="activity-list" id="activityList">
+                    <!-- Activity items will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create User Modal -->
+    <div class="modal" id="createUserModal">
+        <div class="modal-content">
+            <h2 class="modal-title"><i class="fas fa-user-plus"></i> Tạo Người Dùng Mới</h2>
+            <form id="createUserForm">
+                <div class="form-group">
+                    <label class="form-label">Tên Đăng Nhập *</label>
+                    <input type="text" class="form-input" name="username" required 
+                           placeholder="Nhập tên đăng nhập" minlength="3" maxlength="20">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Họ và Tên</label>
+                    <input type="text" class="form-input" name="full_name" 
+                           placeholder="Nhập họ và tên đầy đủ">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="email" 
+                           placeholder="email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Role *</label>
+                    <select class="form-select" name="role" required>
+                        <option value="">Chọn role</option>
+                        <option value="admin">Admin - Quản trị viên</option>
+                        <option value="operator">Operator - Vận hành viên</option>
+                        <option value="viewer" selected>Viewer - Người xem</option>
+                        <option value="guest">Guest - Khách</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mật Khẩu *</label>
+                    <input type="password" class="form-input" name="password" required 
+                           placeholder="Nhập mật khẩu" minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Xác Nhận Mật Khẩu *</label>
+                    <input type="password" class="form-input" name="confirm_password" required 
+                           placeholder="Nhập lại mật khẩu" minlength="6">
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn" onclick="closeCreateUserModal()">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Lưu Người Dùng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div class="modal" id="editUserModal">
+        <div class="modal-content">
+            <h2 class="modal-title"><i class="fas fa-user-edit"></i> Chỉnh Sửa Người Dùng</h2>
+            <form id="editUserForm">
+                <input type="hidden" name="user_id" id="editUserId">
+                
+                <div class="form-group">
+                    <label class="form-label">Tên Đăng Nhập *</label>
+                    <input type="text" class="form-input" name="username" id="editUsername" required 
+                           placeholder="Nhập tên đăng nhập" minlength="3" maxlength="20">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Họ và Tên</label>
+                    <input type="text" class="form-input" name="full_name" id="editFullName" 
+                           placeholder="Nhập họ và tên đầy đủ">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="email" id="editEmail" 
+                           placeholder="email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Role *</label>
+                    <select class="form-select" name="role" id="editRole" required>
+                        <option value="">Chọn role</option>
+                        <option value="admin">Admin - Quản trị viên</option>
+                        <option value="operator">Operator - Vận hành viên</option>
+                        <option value="viewer">Viewer - Người xem</option>
+                        <option value="guest">Guest - Khách</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Đổi Mật Khẩu (Để trống nếu không đổi)</label>
+                    <input type="password" class="form-input" name="password" 
+                           placeholder="Nhập mật khẩu mới">
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn" onclick="closeEditUserModal()">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Cập Nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">💡</span>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle"></div>
+            <div class="toast-message" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/users.js') }}"></script>
+</body>
+</html>

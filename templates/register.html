@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <title>Đăng ký - Hệ Thống Giám Sát Và Điều Hướng Pin Năng Lượng Mặt Trời</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="register-container">
+        <img src="{{ url_for('static', filename='img/iuh.png') }}"
+             alt="IUH Logo"
+             class="header-logo">
+
+        <div class="logo">
+            <h1>Khoa Công Nghệ Điện Tử</h1>
+            <h2>Hệ Thống Giám Sát Và Điều Hướng<br>Pin Năng Lượng Mặt Trời</h2>
+            <p>GVHD: Ths Nguyễn Văn Chiến</p> 
+            <p>Nguyễn Thành Nguyên & Dương Quốc Kiệt</p>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+        
+        <form id="registerForm" method="POST">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Tên đăng nhập
+                </label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Nhập tên đăng nhập (6-20 ký tự)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="full_name">
+                    <i class="fas fa-id-card"></i> Họ và tên
+                </label>
+                <div class="input-with-icon">
+                    <i class="fas fa-id-card input-icon"></i>
+                    <input type="text" id="full_name" name="full_name" 
+                           placeholder="Nhập họ và tên đầy đủ">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Mật khẩu
+                </label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" required 
+                           minlength="6" placeholder="Nhập mật khẩu (ít nhất 6 ký tự)">
+                </div>
+                <div class="password-strength">
+                    <div class="strength-text">Độ mạnh mật khẩu: <span id="strengthText">Yếu</span></div>
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">
+                    <i class="fas fa-lock"></i> Xác nhận mật khẩu
+                </label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirm_password" name="confirm_password" required 
+                           minlength="6" placeholder="Nhập lại mật khẩu">
+                </div>
+                <div id="passwordMatch" style="font-size: 0.85em; margin-top: 5px;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email (tuỳ chọn)
+                </label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" name="email" 
+                           placeholder="example@email.com">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-user-plus"></i> Đăng ký tài khoản
+            </button>
+        </form>
+        
+        <div class="requirements">
+            <h4><i class="fas fa-info-circle"></i> Yêu cầu tài khoản:</h4>
+            <ul>
+                <li>Tên đăng nhập: 6-20 ký tự (chữ, số, gạch dưới)</li>
+                <li>Mật khẩu: Tối thiểu 6 ký tự</li>
+                <li>Mật khẩu nên bao gồm chữ hoa, chữ thường và số</li>
+                <li>Hai mật khẩu phải trùng khớp</li>
+            </ul>
+        </div>
+        
+        <div class="role-info">
+            <strong><i class="fas fa-shield-alt"></i> Lưu ý về phân quyền:</strong>
+            <p style="margin-top: 5px;">
+                Tài khoản đăng ký qua trang này sẽ được cấp quyền <strong>"Viewer" mặc định.
+                <strong></strong>Để nâng cấp quyền (Operator/Admin), vui lòng liên hệ với quản trị viên.
+            </p>
+        </div>
+        
+        <div class="links">
+            <p>Đã có tài khoản? 
+                <a href="{{ url_for('login') }}">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập ngay
+                </a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #718096;">
+                <i class="fas fa-question-circle"></i> Cần hỗ trợ? Email: 21068001.nguyen@student.iuh.edu.vn
+            </p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

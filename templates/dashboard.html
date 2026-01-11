@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hệ Thống Giám Sát Và Điều Hướng Pin Năng Lượng Mặt Trời</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS tách riêng -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='img/iuh.png') }}"
+     alt        ="Solar Logo"
+     cla            ss="header-logo">
+            <h2>Khoa Công Nghệ Điện Tử</h2>
+            <h1>Hệ Thống Giám Sát Và Điều Hướng Pin Năng Lượng Mặt Trời</h1>
+            <p>GVHD: Ths Nguyễn Văn Chiến</p>
+            <p>Nguyễn Thành Nguyên & Dương Quốc Kiệt</p>
+
+            <div class="user-info">
+                <span>👤 {{ username }}</span>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <!-- Weather Panel -->
+        <div class="weather-panel" id="weatherPanel">
+            <div class="weather-current">
+                <div class="weather-icon" id="weatherIcon">{{ weather.weather_icon }}</div>
+                <div class="weather-info">
+                    <div class="weather-temp" id="weatherTemp">{{ weather.temperature }}°C</div>
+                    <div class="weather-desc" id="weatherDesc">{{ weather.weather_desc }}</div>
+                </div>
+                <button onclick="updateWeather(event)" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer;">
+                    🔄 Cập nhật
+                </button>
+            </div>
+
+            <div class="weather-details">
+                <div class="weather-detail-item">
+                    <span class="weather-detail-icon">💧</span>
+                    <span>Độ ẩm: <span id="weatherHumidity">--%</span></span>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="weather-detail-icon">💨</span>
+                    <span>Gió: <span id="weatherWind">-- km/h</span></span>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="weather-detail-icon">☁️</span>
+                    <span>Mây: <span id="weatherClouds">--%</span></span>
+                </div>
+                <div class="weather-detail-item">
+                    <span class="weather-detail-icon">🌅</span>
+                    <span>Mặt trời: <span id="weatherSunrise">--:--</span></span>
+                </div>
+            </div>
+
+            <div class="weather-forecast">
+                <div class="forecast-title">📈 Dự báo 12h tiếp theo</div>
+                <div class="forecast-list" id="weatherForecast">
+                    <!-- Forecast items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="picoStatus"></div>
+                <span>Trạng Thái Pico</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot online"></div>
+                <span>Web Server</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot online"></div>
+                <span>Cơ Sở Dữ Liệu</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot online"></div>
+                <span>User: {{ username }}</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="test-alert-btn" onclick="testSlackAlert(event)">
+                🚨 Kiểm Tra Cảnh Báo Slack
+            </button>
+            <button class="test-report-btn" onclick="testSlackReport(event)">
+                📊 Kiểm Tra Báo Cáo Slack
+            </button>
+        </div>
+
+        <!-- Tabs với badge cảnh báo -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('dashboard', event)">📊 Dashboard</button>
+            <button class="tab-btn" onclick="openTab('history', event)">📈 Lịch Sử</button>
+            <button class="tab-btn" onclick="openTab('daily', event)">📅 Theo Ngày</button>
+            <button class="tab-btn" onclick="openTab('reports', event)">📋 Báo Cáo</button>
+            <button class="tab-btn" onclick="openTab('alerts', event)" id="alertsTabBtn">
+                🚨 Cảnh Báo
+                <span id="alertsBadge" class="badge" style="display: none">0</span>
+            </button>
+            <button class="tab-btn" onclick="window.location.href='/users'">
+                <i class="fas fa-users"></i> Quản Lý Người Dùng
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard">
+                <!-- Sensor Data Panel -->
+                <div class="card">
+                    <h2>📊 Dữ Liệu Cảm Biến</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-item">
+                            <div class="sensor-label">Góc Xoay Trái Phải</div>
+                            <div class="sensor-value" id="azimuthValue">--°</div>
+                        </div>
+                        <div class="sensor-item">
+                            <div class="sensor-label">Góc Xoay Trên Xuống</div>
+                            <div class="sensor-value" id="elevationValue">--°</div>
+                        </div>
+                        <div class="sensor-item">
+                            <div class="sensor-label">Dòng Điện</div>
+                            <div class="sensor-value" id="currentValue">-- A</div>
+                        </div>
+                        <div class="sensor-item">
+                            <div class="sensor-label">Điện Áp</div>
+                            <div class="sensor-value" id="voltageValue">-- V</div>
+                        </div>
+                        <div class="sensor-item">
+                            <div class="sensor-label">Công Suất</div>
+                            <div class="sensor-value" id="powerValue">-- W</div>
+                        </div>
+                        <div class="sensor-item">
+                            <div class="sensor-label">Hiệu Suất</div>
+                            <div class="sensor-value" id="efficiencyValue">--%</div>
+                        </div>
+                    </div>
+
+                    <!-- Battery Information Section -->
+                    <h2 style="margin-top: 25px;">🔋 Thông tin Pin 12V</h2>
+                    <div class="battery-grid">
+                        <div class="battery-item">
+                            <div class="battery-icon">⚡</div>
+                            <div class="sensor-label">Điện áp Pin Lưu Trữ</div>
+                            <div class="battery-value" id="batteryVoltageValue">-- V</div>
+                            <div class="sensor-label">Trạng thái</div>
+                            <div id="batteryStatusText">--</div>
+                        </div>
+                        <div class="battery-item">
+                            <div class="battery-icon">🔋</div>
+                            <div class="sensor-label">Dung lượng Pin Còn Lại</div>
+                            <div class="battery-percentage" id="batterySocValue">--%</div>
+                            <div class="battery-progress">
+                                <div class="battery-progress-bar" id="batteryProgressBar"></div>
+                            </div>
+                            <div class="sensor-label" id="batteryCapacityText">-- / -- Ah</div>
+                        </div>
+                    </div>
+
+                    <div class="last-update">
+                        Cập Nhật Lần Cuối: <span id="lastUpdate">--</span>
+                    </div>
+                </div>
+
+                <!-- Control Panel -->
+                <div class="card">
+                    <h2>🎮 Bảng Điều Khiển</h2>
+                    <div class="control-panel">
+                        <div class="mode-toggle">
+                            <button class="toggle-btn active" id="autoBtn" onclick="sendControl('SET_MODE', 'AUTO')">Tự Động</button>
+                            <button class="toggle-btn" id="manualBtn" onclick="sendControl('SET_MODE', 'MANUAL')">Thủ Công</button>
+                        </div>
+
+                        <div id="manualControls" style="display: none;">
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <span>Góc Xoay Trái Phải:</span>
+                                    <span class="slider-value" id="azimuthSliderValue">90°</span>
+                                </div>
+                                <input type="range" id="azimuthSlider" min="0" max="180" value="90" oninput="updateSlider('azimuth')">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-label">
+                                    <span>Góc Xoay Trên Xuống:</span>
+                                    <span class="slider-value" id="elevationSliderValue">90°</span>
+                                </div>
+                                <input type="range" id="elevationSlider" min="0" max="180" value="90" oninput="updateSlider('elevation')">
+                            </div>
+
+                            <button class="toggle-btn" onclick="sendManualAngles()" style="background: #48bb78; color: white;">
+                                Áp Dụng Góc Đã Đặt
+                            </button>
+                        </div>
+
+                        <div class="energy-toggle">
+                            <span>Chế Độ Tiết Kiệm Năng Lượng:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="energySavingToggle" onchange="sendControl('SET_ENERGY_MODE', this.checked)">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <h2>📈 Lịch Sử Dữ Liệu Theo Dòng Thời Gian</h2>
+                <div class="chart-controls">
+                    <button class="chart-btn active" onclick="changeChartType('power', event)">Công suất</button>
+                    <button class="chart-btn" onclick="changeChartType('voltage', event)">Điện áp</button>
+                    <button class="chart-btn" onclick="changeChartType('current', event)">Dòng điện</button>
+                    <button class="chart-btn" onclick="changeChartType('efficiency', event)">Hiệu suất</button>
+                    <button class="chart-btn" onclick="changeChartType('battery_voltage', event)">Điện áp Pin</button>
+                    <button class="chart-btn" onclick="changeChartType('battery_soc', event)">% Pin</button>
+                    <select id="timeRange" onchange="loadHistoryChart()" style="padding: 8px; border-radius: 5px; border: 1px solid #e2e8f0;">
+                        <option value="1">1 giờ</option>
+                        <option value="6">6 giờ</option>
+                        <option value="24" selected>24 giờ</option>
+                        <option value="168">1 tuần</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="historyChart"></canvas>
+                </div>
+                <button onclick="loadHistoryChart()" style="margin-top: 15px; padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Refresh Chart
+                </button>
+            </div>
+        </div>
+
+        <!-- Daily Chart Tab -->
+        <div id="daily" class="tab-content">
+            <div class="card">
+                <h2>📅 Biểu Đồ Theo Ngày</h2>
+                <div class="chart-controls">
+                    <button class="chart-btn active" onclick="changeDailyChartType('power', event)">Công suất</button>
+                    <button class="chart-btn" onclick="changeDailyChartType('voltage', event)">Điện áp</button>
+                    <button class="chart-btn" onclick="changeDailyChartType('current', event)">Dòng điện</button>
+                    <button class="chart-btn" onclick="changeDailyChartType('efficiency', event)">Hiệu suất</button>
+                    <button class="chart-btn" onclick="changeDailyChartType('battery_voltage', event)">Điện áp Pin</button>
+                    <button class="chart-btn" onclick="changeDailyChartType('battery_soc', event)">% Pin</button>
+                    <select id="dateSelect" onchange="loadDailyChart()" style="padding: 8px; border-radius: 5px; border: 1px solid #e2e8f0;">
+                        <option value="">Chọn ngày...</option>
+                    </select>
+                    <button onclick="loadDailyChart()" style="padding: 8px 16px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Xem biểu đồ
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+                <div style="margin-top: 15px; text-align: center; color: #666;">
+                    <p>Hiển thị dữ liệu theo giờ trong ngày</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <h2>📋 Báo Cáo Hằng Ngày</h2>
+                <div id="reportsData">Loading...</div>
+                <button onclick="loadReports()" style="margin-top: 15px; padding: 10px 20px; background: #48bb78; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Refresh Reports
+                </button>
+            </div>
+        </div>
+
+        <!-- Alerts Tab -->
+        <div id="alerts" class="tab-content">
+            <div class="card">
+                <h2>🚨 Lịch Sử Cảnh Báo</h2>
+                <div id="alertsHistory" class="alert-history">
+                    Loading alerts history...
+                </div>
+                <div class="action-buttons">
+                    <button onclick="loadAlertsHistory()" style="padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🔄 Tải lại
+                    </button>
+                    <button onclick="clearAlerts()" style="padding: 10px 20px; background: #e53e3e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🗑️ Xóa lịch sử
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="toast-icon">💡</span>
+        <div class="toast-content">
+            <div class="toast-title"></div>
+            <div class="toast-message"></div>
+        </div>
+        <button class="toast-close" onclick="hideToast()">×</button>
+    </div>
+
+    
+
+    <!-- LIBS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JS tách riêng -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
